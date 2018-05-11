@@ -37,8 +37,8 @@ seed = 0
 # importing csv data 
 from numpy import genfromtxt
 
-inp_data = genfromtxt('/root/BayesianRNN/Sentiment_analysis_code/pushGit/inp.csv', delimiter=',')
-out_data = genfromtxt('/root/BayesianRNN/Sentiment_analysis_code/pushGit/out.csv', delimiter=',')
+inp_data = genfromtxt('/root/torch/pushGit/inp.csv', delimiter=',')
+out_data = genfromtxt('/root/torch/pushGit/out.csv', delimiter=',')
 #out_data = np.reshape(out_data,(198,1))
 out_data=out_data.tolist()
 #print(inp_data)
@@ -57,7 +57,7 @@ print(args)
 p_W, p_U, p_dense, p_emb, weight_decay, batch_size, maxlen = args
 batch_size = int(batch_size)
 maxlen = int(maxlen)
-folder = "/root/BayesianRNN/"
+folder = "/root/torch/pushGit/BayesianRNN"
 filename = ("sa_DropoutLSTM_pW_%.2f_pU_%.2f_pDense_%.2f_pEmb_%.2f_reg_%f_batch_size_%d_cutoff_%d_epochs"
   % (p_W, p_U, p_dense, p_emb, weight_decay, batch_size, maxlen))
 print(filename)
@@ -190,6 +190,4 @@ prob = np.array([model.predict_stochastic(X_test, batch_size=500, verbose=0)
 prob_mean = np.mean(prob, 0)
 print(np.mean((np.atleast_2d(Y_test).T - (mean_y_train + std_y_train * standard_prob))**2, 0)**0.5)
 print(np.mean((np.atleast_2d(Y_test).T - (mean_y_train + std_y_train * prob_mean))**2, 0)**0.5)
-                                                                                                                                     192,1         
-
-                                                                                                                                     175,0-1       
+                          

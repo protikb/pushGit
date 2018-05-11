@@ -37,10 +37,12 @@ seed = 0
 # importing csv data 
 from numpy import genfromtxt
 
-inp_data = genfromtxt('/home/amarjot/Documents/BayesianRNN/Sentiment_analysis_code/inp.csv', delimiter=',')
-out_data = genfromtxt('/home/amarjot/Documents/BayesianRNN/Sentiment_analysis_code/out.csv', delimiter=',')
+inp_data = genfromtxt('/root/torch/pushGit/inp.csv', delimiter=',')
+out_data = genfromtxt('/root/torch/pushGit/mod_out.csv', delimiter=',')
 #out_data = np.reshape(out_data,(198,1))
+#print(out_data.shape)
 out_data=out_data.tolist()
+#print(out_data.shape)
 #print(inp_data)
 #print(inp_data.shape)
 #print(out_data)
@@ -57,63 +59,68 @@ print(args)
 p_W, p_U, p_dense, p_emb, weight_decay, batch_size, maxlen = args
 batch_size = int(batch_size)
 maxlen = int(maxlen)
-folder = "/home/amarjot/Documents/BayesianRNN/"
+folder = "/root/torch/pushGit/BayesianRNN"
 filename = ("sa_DropoutLSTM_pW_%.2f_pU_%.2f_pDense_%.2f_pEmb_%.2f_reg_%f_batch_size_%d_cutoff_%d_epochs"
   % (p_W, p_U, p_dense, p_emb, weight_decay, batch_size, maxlen))
 print(filename)
 
-nb_words = 20000
+#nb_words = 20000
 # maxlen = 20  # cut texts after this number of words (among top max_features most common words)
-start_char = 1
-oov_char = 2
-index_from = 3
-skip_top = 0
+#start_char = 1
+#oov_char = 2
+#index_from = 3
+#skip_top = 0
 
 test_split = 0.2
 
 # In[6]:
 
 print("Loading data...")
-files = ["Dennis+Schwartz", "James+Berardinelli", "Scott+Renshaw", "Steve+Rhodes"]
-texts, ratings = [], []
-for file in files:
-    with open("scale_data/scaledata/" + file + "/subj." + file, "r") as f:
-        texts += list(f)
-    with open("scale_data/scaledata/" + file + "/rating." + file, "r") as f:
-        ratings += list(f)
-tokenizer = text.Tokenizer(filters='')
-tokenizer.fit_on_texts(texts)
-X = tokenizer.texts_to_sequences(texts)
-Y = [float(rating) for rating in ratings]
-print(Y)
-np.random.seed(seed)
-np.random.shuffle(X)
-np.random.seed(seed)
-np.random.shuffle(Y)
+#files = ["Dennis+Schwartz", "James+Berardinelli", "Scott+Renshaw", "Steve+Rhodes"]
+#texts, ratings = [], []
+#for file in files:
+ #   with open("scale_data/scaledata/" + file + "/subj." + file, "r") as f:
+ #       texts += list(f)
+  #  with open("scale_data/scaledata/" + file + "/rating." + file, "r") as f:
+  #      ratings += list(f)
+#tokenizer = text.Tokenizer(filters='')
+#tokenizer.fit_on_texts(texts)
+#X = tokenizer.texts_to_sequences(texts)
+#Y = [float(rating) for rating in ratings]
+#print(Y)
+#np.random.seed(seed)
+#np.random.shuffle(X)
+#np.random.seed(seed)
+#np.random.shuffle(Y)
 
-X = [[start_char] + [w + index_from for w in x] for x in X]
+#X = [[start_char] + [w + index_from for w in x] for x in X]
 
-new_X = []
-new_Y = []
-for x, y in zip(X, Y):
+#new_X = []
+#new_Y = []
+#for x, y in zip(X, Y):
 #     if len(x) < maxlen:
 #         new_X.append(x)
 #         new_Y.append(y)
-    for i in xrange(0, len(x), maxlen):
-        new_X.append(x[i:i+maxlen])
-        new_Y.append(y)
-X = new_X
-Y = new_Y
+#    for i in xrange(0, len(x), maxlen):
+ #       new_X.append(x[i:i+maxlen])
+  #      new_Y.append(y)
+#X = new_X
+#Y = new_Y
 # by convention, use 2 as OOV word
 # reserve 'index_from' (=3 by default) characters: 0 (padding), 1 (start), 2 (OOV)
 
-X = [[oov_char if (w >= nb_words or w < skip_top) else w for w in x] for x in X]
+#X = [[oov_char if (w >= nb_words or w < skip_top) else w for w in x] for x in X]
 #print(Y)
 #print(len(Y))
 #X_train = X[:int(len(X)*(1-test_split))]
 #Y_train = Y[:int(len(X)*(1-test_split))]
 X_train = inp_data[:150]#......................added commentd out above two lines
 Y_train = out_data[:150]#..............addded
+print(inp_data.shape,'input data shape')
+print(len(out_data),'output data shape')
+
+#print(out_data.shape,'test1')
+#print(Y_train.shape,'test2')
 mean_y_train = np.mean(Y_train)
 std_y_train = np.std(Y_train)
 Y_train = [(y - mean_y_train) / std_y_train for y in Y_train]
@@ -122,10 +129,13 @@ Y_train = [(y - mean_y_train) / std_y_train for y in Y_train]
 #Y_test = Y[int(len(X)*(1-test_split)):]
 X_test = inp_data[150:]#.....added, commented above two lines
 Y_test = out_data[150:]#......added
-print(len(X_train), 'train sequences')
-print(len(X_test), 'test sequences')
+print(len(X_train), 'train sequences X length')
+print(len(X_test), 'test sequences X length')
 print(len(Y_train), 'train sequences Y')
 print (len(Y_test), 'test sequence Y')
+#print(X_train.shape, 'X_train shape')
+#print(Y_test.shape, 'Y_test shape')
+
 # In[7]:
 
 print("Pad sequences (samples x time)")
@@ -139,13 +149,13 @@ print('X_test shape:', X_test.shape)
 
 print('Build model...')
 model = Sequential()
-model.add(DropoutEmbedding(100, 64, W_regularizer=l2(weight_decay), p=p_emb))
+model.add(DropoutEmbedding(155, 64, W_regularizer=l2(weight_decay), p=p_emb))
 model.add(DropoutLSTM(64, 64, truncate_gradient=maxlen, W_regularizer=l2(weight_decay),
                       U_regularizer=l2(weight_decay),
                       b_regularizer=l2(weight_decay),
                       p_W=p_W, p_U=p_U))
 model.add(Dropout(p_dense))
-model.add(Dense(64, 1, W_regularizer=l2(weight_decay), b_regularizer=l2(weight_decay)))
+model.add(Dense(64, 20, W_regularizer=l2(weight_decay), b_regularizer=l2(weight_decay)))
 
 #optimiser = SGD(lr=0.1, decay=1e-6, momentum=0.9, nesterov=False)
 optimiser = 'adam'
@@ -162,9 +172,12 @@ model.compile(loss='mean_squared_error', optimizer=optimiser)
 print("Train...")
 checkpointer = ModelCheckpoint(filepath=folder+filename+".hdf5",
     verbose=1, append_epoch_name=True, save_every_X_epochs=50)
-modeltest_1 = ModelTest(X_train[:100], mean_y_train + std_y_train * np.atleast_2d(Y_train[:100]).T,
+modeltest_1 = ModelTest(X_train[:100], mean_y_train + std_y_train * np.atleast_2d(Y_train[:100]),
                       test_every_X_epochs=1, verbose=0, loss='euclidean',
                       mean_y_train=mean_y_train, std_y_train=std_y_train, tau=0.1)
+#modeltest_1 = ModelTest(X_train, mean_y_train + std_y_train * np.atleast_2d(Y_train).T,
+#                      test_every_X_epochs=1, verbose=0, loss='euclidean',
+#                      mean_y_train=mean_y_train, std_y_train=std_y_train, tau=0.1)
 modeltest_2 = ModelTest(X_test, np.atleast_2d(Y_test).T, test_every_X_epochs=1, verbose=0, loss='euclidean',
                       mean_y_train=mean_y_train, std_y_train=std_y_train, tau=0.1)
 model.fit(X_train, Y_train, batch_size=batch_size, nb_epoch=250,
@@ -185,7 +198,7 @@ print(np.mean(((mean_y_train + std_y_train * np.atleast_2d(Y_train).T)
 standard_prob = model.predict(X_test, batch_size=15, verbose=1)
 print(standard_prob)
 T = 50
-prob = np.array([model.predict_stochastic(X_test, batch_size=500, verbose=0)
+prob = np.array([model.predict_stochastic(X_test, batch_size=15, verbose=0)
                  for _ in xrange(T)])
 prob_mean = np.mean(prob, 0)
 print(np.mean((np.atleast_2d(Y_test).T - (mean_y_train + std_y_train * standard_prob))**2, 0)**0.5)

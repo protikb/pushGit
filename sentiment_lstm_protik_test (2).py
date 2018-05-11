@@ -37,8 +37,8 @@ seed = 0
 # importing csv data 
 from numpy import genfromtxt
 
-input_data = genfromtxt('/home/amarjot/Documents/BayesianRNN/Sentiment_analysis_code/inp.csv', delimiter=',')
-output_data = genfromtxt('/home/amarjot/Documents/BayesianRNN/Sentiment_analysis_code/out.csv', delimiter=',')
+input_data = genfromtxt('inp.csv', delimiter=',')
+output_data = genfromtxt('out.csv', delimiter=',')
 #out_data = np.reshape(out_data,(198,1))
 #out_data=out_data.tolist()
 
@@ -65,12 +65,13 @@ print(args)
 p_W, p_U, p_dense, p_emb, weight_decay, batch_size, maxlen = args
 batch_size = int(batch_size)
 maxlen = int(maxlen)
-folder = "/home/amarjot/Documents/BayesianRNN"
-filename = ("sa_DropoutLSTM_pW_%.2f_pU_%.2f_pDense_%.2f_pEmb_%.2f_reg_%f_batch_size_%d_cutoff_%d_epochs"
+folder = "/root/torch/pushGit/"
+filename = ("BayesianRNNsa_DropoutLSTM_pW_%.2f_pU_%.2f_pDense_%.2f_pEmb_%.2f_reg_%f_batch_size_%d_cutoff_%d_epochs"
   % (p_W, p_U, p_dense, p_emb, weight_decay, batch_size, maxlen))
 print(filename)
 
 nb_words = 20000
+#nb_words = 61
 # maxlen = 20  # cut texts after this number of words (among top max_features most common words)
 start_char = 1
 oov_char = 2
@@ -126,7 +127,7 @@ model.compile(loss='mean_squared_error', optimizer=optimiser)
 
 # In[ ]:
 
-model.load_weights("/home/amarjot/Documents/BayesianRNN/Sentiment_analysis_code/BayesianRNNsa_DropoutLSTM_pW_0.50_pU_0.50_pDense_0.50_pEmb_0.50_reg_0.000001_batch_size_128_cutoff_100_epochs_00200.hdf5")
+model.load_weights("/root/torch/pushGit/BayesianRNNsa_DropoutLSTM_pW_0.50_pU_0.50_pDense_0.50_pEmb_0.50_reg_0.000001_batch_size_128_cutoff_100_epochs_00200.hdf5")
 
 
 # In[ ]:
